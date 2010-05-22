@@ -11,7 +11,7 @@
 
 // Name & Version
 PRODUCT_NAME = $(PROJECT_NAME)
-PRODUCT_VERSION = 5.1.1
+PRODUCT_VERSION = 0.5
 
 
 // Paths
@@ -19,9 +19,9 @@ C74SUPPORT = /Library/Frameworks/c74support
 HEADER_SEARCH_PATHS = /usr/local/include /Developer/Headers/FlatCarbon "$(C74SUPPORT)/max-includes" "$(C74SUPPORT)/msp-includes" "$(C74SUPPORT)/jit-includes"
 FRAMEWORK_SEARCH_PATHS = "$(C74SUPPORT)/max-includes" "$(C74SUPPORT)/msp-includes" "$(C74SUPPORT)/jit-includes"
 DSTROOT = $(SRCROOT)/sdk-build
-// (This next path is relative to DSTROOT)
-INSTALL_PATH = /
+// (This next path is relative to DSTROOT) I have this set up as a symlink into the max directory for easy running/debugging
 
+INSTALL_PATH = /dev
 
 // Special Files
 GCC_PREFIX_HEADER = $(C74SUPPORT)/max-includes/macho-prefix.pch
@@ -33,8 +33,8 @@ SDKROOT = /Developer/SDKs/MacOSX10.5.sdk
 
 GCC_VERSION = 4.0
 // The above line can be specialized as follows provided you are using Xcode 3 or higher
-//	GCC_VERSION[arch=i386] = 4.0
-//	GCC_VERSION[arch=ppc] = 4.0
+//GCC_VERSION[arch=i386] = 4.0
+//GCC_VERSION[arch=ppc] = 4.0
 
 MACOSX_DEPLOYMENT_TARGET = 10.5
 
