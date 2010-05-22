@@ -32,12 +32,14 @@
 #include "ext_common.h"
 #include "ext_systhread.h"
 #include <ola/BaseTypes.h>
+#include <ola/Logging.h>
 #include <ola/DmxBuffer.h>
 #include <ola/StreamingClient.h>
 #include <algorithm>
 
 using ola::StreamingClient;
 using ola::DmxBuffer;
+
 
 // a macro to mark exported symbols in the code without requiring an external file to define them
 #ifdef WIN_VERSION
@@ -49,23 +51,38 @@ using ola::DmxBuffer;
 #endif
 
 
+enum ConnectionState {	
+	disconnected = 0,   	
+	connected = 1
+};
+
+
 // The OLA Output object.
 typedef struct  {
 	t_object c_box;
+	void *m_outlet1;
 	StreamingClient *client;
 	DmxBuffer buffer;
 	long universe;
+	enum ConnectionState connectionState;
 } t_ola_output;
 
 
 // prototypes
 void *ola_output_new(t_symbol *s, long argc, t_atom *argv);
-void ola_output_free(t_ola_output* x);
-void ola_output_list(t_ola_output *x, t_symbol *msg, long argc, t_atom *argv);
-void ola_output_int(t_ola_output *x, long value);
+void ola_output_free(t_ola_output* ola_output);
+void ola_output_list(t_ola_output *ola_output, t_symbol *msg, long argc, t_atom *argv);
+void ola_output_int(t_ola_output *ola_output, long value);
 void ola_output_assist(t_ola_output *ola_output, void *b, long io, long index, char *s);
-void ola_output_blackout(t_ola_output* x);
+void ola_output_blackout(t_ola_output* ola_output);
+void ola_output_state(t_ola_output* ola_output);
+void ola_output_connect(t_ola_output* ola_output);
 void ola_output_in1(t_ola_output *ola_output, long n);
+void ola_output_outlet(t_ola_output *ola_output);
+void setConnectionState(t_ola_output *ola_output, ConnectionState state);
+void SetOlaStateDisconnected(t_ola_output *ola_output);
+void SetupOlaConnection(t_ola_output *ola_output);
+
 
 
 // The class structure for this plugin
@@ -77,6 +94,11 @@ static t_class *s_ola_output_class = NULL;
  * object which tells MAX how to create objects of type Ola Output.
  */
 int T_EXPORT main(void) {
+  
+  // turn on OLA logging
+  ola::InitLogging(ola::OLA_LOG_WARN, ola::OLA_LOG_STDERR);
+	
+	
   t_class *c = class_new("olaoutput",
                          (method) ola_output_new,
                          (method) ola_output_free,
@@ -90,6 +112,8 @@ int T_EXPORT main(void) {
   class_addmethod(c, (method) ola_output_int, "int", A_LONG, 0);
   class_addmethod(c, (method) ola_output_assist, "assist", A_CANT, 0);
   class_addmethod(c, (method) ola_output_blackout, "blackout", 0);
+  class_addmethod(c, (method) ola_output_state, "state", 0);
+  class_addmethod(c, (method) ola_output_connect, "connect", 0);
   class_addmethod(c, (method) ola_output_in1, "in1", A_LONG, 0);
   class_register(CLASS_BOX, c);
   s_ola_output_class = c;
@@ -103,11 +127,18 @@ int T_EXPORT main(void) {
  */
 void *ola_output_new(t_symbol *s, long argc, t_atom *argv) {
 	t_ola_output *ola_output = (t_ola_output*) object_alloc(s_ola_output_class);
+	
 	if (ola_output) {
+		//set up connectionstate outlet
+		ola_output->m_outlet1 = intout((t_object *)ola_output); 
+
+		//set up ola
 		ola_output->client = new StreamingClient();
-		if (!ola_output->client->Setup()) {
-			post("OlaOutput: OLA StreamingClient setup failed. Is olad running?");
-		}
+
+		//set up the connection to ola
+		SetupOlaConnection(ola_output);
+		
+		
 		if (argc == 1 && atom_getlong(argv+0) != 0) { //the first argument is universe
 			ola_output->universe = atom_getlong(argv+0); //if specified, use it
 		}
@@ -116,6 +147,7 @@ void *ola_output_new(t_symbol *s, long argc, t_atom *argv) {
 		}
 
 		intin(ola_output, 1); //create the universe inlet
+
 	}
 	return ola_output;
 }
@@ -155,7 +187,10 @@ void ola_output_list(t_ola_output *ola_output, t_symbol *msg, long argc, t_atom 
 	}
 
 	if (ola_output->client) {
-		ola_output->client->SendDmx(ola_output->universe, ola_output->buffer);
+		if (!ola_output->client->SendDmx(ola_output->universe, ola_output->buffer)) {
+			//looks like ola is disconnected
+			SetOlaStateDisconnected(ola_output);
+		}	
 	}
 }
 
@@ -177,7 +212,10 @@ void ola_output_int(t_ola_output *ola_output, long value)
 	ola_output->buffer.SetChannel(0, dmxVal); 
 		
 	if (ola_output->client) {
-		ola_output->client->SendDmx(ola_output->universe, ola_output->buffer);
+		if (!ola_output->client->SendDmx(ola_output->universe, ola_output->buffer)) {
+			//looks like ola is disconnected
+			SetOlaStateDisconnected(ola_output);
+		}	
 	}
 }
 
@@ -201,7 +239,7 @@ void ola_output_assist(t_ola_output *ola_output, void *b, long io, long index, c
 			}
 			break; 
 		case 2:
-			strncpy_zero(s, "This is a description of the outlet", 512); 
+			strncpy_zero(s, "Status messages are sent to this outlet", 512); 
 			break;
 	}
 }
@@ -213,14 +251,40 @@ void ola_output_assist(t_ola_output *ola_output, void *b, long io, long index, c
  */
 void ola_output_blackout(t_ola_output *ola_output) {
 	
-	post("OlaOutput: sending blackout to OLA");
-	
 	if (ola_output->client) {
 		ola_output->buffer.Blackout();
-		ola_output->client->SendDmx(ola_output->universe, ola_output->buffer);
+		if (!ola_output->client->SendDmx(ola_output->universe, ola_output->buffer)) {
+			//looks like ola is disconnected
+			SetOlaStateDisconnected(ola_output);
+		}
+		
 	}
 }
 
+
+/*
+ * Sends the current OLA connection state to max 
+ * @param ola_output a pointer to a t_ola_output struct
+ */
+void ola_output_state(t_ola_output *ola_output) {
+	
+	//output the current connection state value to max
+	ola_output_outlet(ola_output);
+}
+
+
+/*
+ * Initiates the connection to OLA, in case olaoutput didn't connect on instantiation 
+ * @param ola_output a pointer to a t_ola_output struct
+ */
+void ola_output_connect(t_ola_output *ola_output) {
+	
+	if (ola_output->connectionState == disconnected) {
+		
+		//set up the connection to ola
+		SetupOlaConnection(ola_output);
+	}
+}
 
 
 /*
@@ -231,4 +295,53 @@ void ola_output_blackout(t_ola_output *ola_output) {
 void ola_output_in1(t_ola_output *ola_output, long n) {
 	ola_output->universe = n;
 }
+
+
+/*
+ * Outputs OLA connection status
+ * 0 = not connected to ola, 1 = connected to ola
+ * @param ola_output a pointer to a t_ola_output struct
+ */
+void ola_output_outlet(t_ola_output *ola_output) {
+	outlet_int(ola_output->m_outlet1, (long)ola_output->connectionState);
+}
+
+
+
+
+
+/* helper methods */
+
+void setConnectionState(t_ola_output *ola_output, ConnectionState state) {
+	
+	//set the new state
+	ola_output->connectionState = state;
+	
+	//and output the current value to max
+	ola_output_outlet(ola_output);
+	
+}
+
+
+/*
+ * This we call if we are unable to successfully send dmx messages to ola
+ */
+void SetOlaStateDisconnected(t_ola_output *ola_output) {
+	post("OLA StreamingClient: disconnected from olad");
+	setConnectionState(ola_output, disconnected); //hmm, not connected, so output the current state
+}
+
+
+void SetupOlaConnection(t_ola_output *ola_output) {
+	//initiate the connection to ola
+	if (!ola_output->client->Setup()) {
+		setConnectionState(ola_output, disconnected); //hmm, not connected, so output the current state
+		post("OLA StreamingClient setup failed. Is olad running?");
+	}
+	else {
+		setConnectionState(ola_output, connected); //looks like we've connected, so output the current state
+		post("OLA StreamingClient setup successful. Connected to olad.");
+	}
+}	
+
   
