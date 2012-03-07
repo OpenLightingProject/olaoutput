@@ -3,16 +3,16 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 44;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		252574280EEED91700A5E83E /* commonsyms.c in Sources */ = {isa = PBXBuildFile; fileRef = 252574260EEED91700A5E83E /* commonsyms.c */; };
 		AE1AB19E113708CA00DBD57E /* MaxAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE1AB19D113708CA00DBD57E /* MaxAPI.framework */; };
+		AE2B9DD11503422C003689D1 /* libola.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE2B9DD01503422C003689D1 /* libola.dylib */; };
+		AE2B9DD315034235003689D1 /* libolacommon.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE2B9DD215034235003689D1 /* libolacommon.dylib */; };
+		AE2B9DD515034245003689D1 /* libprotobuf.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE2B9DD415034245003689D1 /* libprotobuf.dylib */; };
 		AE50E5F71140CC9B000C684A /* OlaOutput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE50E5F41140CC9B000C684A /* OlaOutput.cpp */; };
-		AE510A851140DF1B00FE7D95 /* libola.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE510A841140DF1B00FE7D95 /* libola.dylib */; };
-		AE510A871140DF1B00FE7D95 /* libolacommon.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE510A861140DF1B00FE7D95 /* libolacommon.dylib */; };
-		AE510A891140DF1B00FE7D95 /* libprotobuf.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE510A881140DF1B00FE7D95 /* libprotobuf.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,10 +21,10 @@
 		2FBBEAE508F335360078DB84 /* OlaOutput.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OlaOutput.mxo; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE1AB19D113708CA00DBD57E /* MaxAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MaxAPI.framework; path = "/Library/Frameworks/c74support/max-includes/MaxAPI.framework"; sourceTree = "<absolute>"; };
 		AE1AB20811370DAE00DBD57E /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AE2B9DD01503422C003689D1 /* libola.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libola.dylib; path = ../../../../../opt/local/lib/libola.dylib; sourceTree = "<group>"; };
+		AE2B9DD215034235003689D1 /* libolacommon.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libolacommon.dylib; path = ../../../../../opt/local/lib/libolacommon.dylib; sourceTree = "<group>"; };
+		AE2B9DD415034245003689D1 /* libprotobuf.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libprotobuf.dylib; path = ../../../../../opt/local/lib/libprotobuf.dylib; sourceTree = "<group>"; };
 		AE50E5F41140CC9B000C684A /* OlaOutput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OlaOutput.cpp; sourceTree = "<group>"; };
-		AE510A841140DF1B00FE7D95 /* libola.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libola.dylib; path = usr/local/lib/libola.dylib; sourceTree = SDKROOT; };
-		AE510A861140DF1B00FE7D95 /* libolacommon.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libolacommon.dylib; path = usr/local/lib/libolacommon.dylib; sourceTree = SDKROOT; };
-		AE510A881140DF1B00FE7D95 /* libprotobuf.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libprotobuf.dylib; path = usr/local/lib/libprotobuf.dylib; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,9 +33,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				AE1AB19E113708CA00DBD57E /* MaxAPI.framework in Frameworks */,
-				AE510A851140DF1B00FE7D95 /* libola.dylib in Frameworks */,
-				AE510A871140DF1B00FE7D95 /* libolacommon.dylib in Frameworks */,
-				AE510A891140DF1B00FE7D95 /* libprotobuf.dylib in Frameworks */,
+				AE2B9DD11503422C003689D1 /* libola.dylib in Frameworks */,
+				AE2B9DD315034235003689D1 /* libolacommon.dylib in Frameworks */,
+				AE2B9DD515034245003689D1 /* libprotobuf.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -45,6 +45,9 @@
 		089C166AFE841209C02AAC07 /* iterator */ = {
 			isa = PBXGroup;
 			children = (
+				AE2B9DD415034245003689D1 /* libprotobuf.dylib */,
+				AE2B9DD215034235003689D1 /* libolacommon.dylib */,
+				AE2B9DD01503422C003689D1 /* libola.dylib */,
 				AE1AB20811370DAE00DBD57E /* Info.plist */,
 				22CF10220EE984600054F513 /* maxmspsdk.xcconfig */,
 				08FB77ADFE841716C02AAC07 /* Source */,
@@ -58,9 +61,6 @@
 			isa = PBXGroup;
 			children = (
 				AE1AB19D113708CA00DBD57E /* MaxAPI.framework */,
-				AE510A841140DF1B00FE7D95 /* libola.dylib */,
-				AE510A861140DF1B00FE7D95 /* libolacommon.dylib */,
-				AE510A881140DF1B00FE7D95 /* libprotobuf.dylib */,
 			);
 			name = "External Frameworks and Libraries";
 			sourceTree = "<group>";
@@ -120,10 +120,11 @@
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastUpgradeCheck = 0420;
 				ORGANIZATIONNAME = "Entropy Lab";
 			};
 			buildConfigurationList = 2FBBEACF08F335010078DB84 /* Build configuration list for PBXProject "OlaOutput" */;
-			compatibilityVersion = "Xcode 3.0";
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
@@ -175,7 +176,11 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 22CF10220EE984600054F513 /* maxmspsdk.xcconfig */;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH)";
+				ALTERNATE_PERMISSIONS_FILES = i386;
+				ARCHS = (
+					ppc,
+					i386,
+				);
 				HEADER_SEARCH_PATHS = (
 					/usr/local/include,
 					/Developer/Headers/FlatCarbon,
@@ -184,6 +189,8 @@
 					"\"$(C74SUPPORT)/jit-includes\"",
 				);
 				OTHER_LDFLAGS = "";
+				SDKROOT = macosx10.6;
+				VALID_ARCHS = i386;
 			};
 			name = Development;
 		};
@@ -191,6 +198,13 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 22CF10220EE984600054F513 /* maxmspsdk.xcconfig */;
 			buildSettings = {
+				ALTERNATE_PERMISSIONS_FILES = i386;
+				ARCHS = (
+					ppc,
+					i386,
+				);
+				SDKROOT = macosx10.6;
+				VALID_ARCHS = i386;
 			};
 			name = Deployment;
 		};
@@ -198,12 +212,22 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 22CF10220EE984600054F513 /* maxmspsdk.xcconfig */;
 			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(LOCAL_LIBRARY_DIR)/Frameworks/c74support/max-includes\"",
 				);
 				GCC_OPTIMIZATION_LEVEL = 0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/local/lib,
+				);
+				PRODUCT_VERSION = 0.7;
+				SDKROOT = macosx10.6;
 			};
 			name = Development;
 		};
@@ -220,6 +244,13 @@
 					"$(inherited)",
 					"\"$(LOCAL_LIBRARY_DIR)/Frameworks/c74support/max-includes\"",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/local/lib,
+				);
+				PRODUCT_VERSION = 0.7;
+				SDKROOT = macosx10.6;
+				VALID_ARCHS = i386;
 			};
 			name = Deployment;
 		};
