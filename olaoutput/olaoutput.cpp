@@ -31,6 +31,7 @@
 #include "ext_strings.h"
 #include "ext_common.h"
 #include "ext_systhread.h"
+
 #include <ola/BaseTypes.h>
 #include <ola/Logging.h>
 #include <ola/DmxBuffer.h>
@@ -39,16 +40,6 @@
 
 using ola::StreamingClient;
 using ola::DmxBuffer;
-
-
-// a macro to mark exported symbols in the code without requiring an external file to define them
-#ifdef WIN_VERSION
-  // note that this the required syntax on windows regardless of whether the compiler is msvc or gcc
-  #define T_EXPORT __declspec(dllexport)
-#else // MAC_VERSION
-  // the mac uses the standard gcc syntax, you should also set the -fvisibility=hidden flag to hide the non-marked symbols
-  #define T_EXPORT __attribute__((visibility("default")))
-#endif
 
 
 enum ConnectionState {	
@@ -72,12 +63,12 @@ typedef struct  {
 void *ola_output_new(t_symbol *s, long argc, t_atom *argv);
 void ola_output_free(t_ola_output* ola_output);
 void ola_output_list(t_ola_output *ola_output, t_symbol *msg, long argc, t_atom *argv);
-void ola_output_int(t_ola_output *ola_output, long value);
+void ola_output_int(t_ola_output *ola_output, t_atom_long value);
 void ola_output_assist(t_ola_output *ola_output, void *b, long io, long index, char *s);
 void ola_output_blackout(t_ola_output* ola_output);
 void ola_output_state(t_ola_output* ola_output);
 void ola_output_connect(t_ola_output* ola_output);
-void ola_output_in1(t_ola_output *ola_output, long n);
+void ola_output_in1(t_ola_output *ola_output, t_atom_long n);
 void ola_output_outlet(t_ola_output *ola_output);
 void setConnectionState(t_ola_output *ola_output, ConnectionState state);
 void SetOlaStateDisconnected(t_ola_output *ola_output);
@@ -93,7 +84,7 @@ static t_class *s_ola_output_class = NULL;
  * The entry point to this plugin. This sets up the global s_ola_output_class
  * object which tells MAX how to create objects of type Ola Output.
  */
-int T_EXPORT main(void) {
+int C74_EXPORT main(void) {
   
   // turn on OLA logging
   ola::InitLogging(ola::OLA_LOG_WARN, ola::OLA_LOG_STDERR);
@@ -108,15 +99,17 @@ int T_EXPORT main(void) {
                          0);
 
   common_symbols_init();
-  class_addmethod(c, (method) ola_output_list, "list", A_GIMME, 0);
-  class_addmethod(c, (method) ola_output_int, "int", A_LONG, 0);
-  class_addmethod(c, (method) ola_output_assist, "assist", A_CANT, 0);
-  class_addmethod(c, (method) ola_output_blackout, "blackout", 0);
-  class_addmethod(c, (method) ola_output_state, "state", 0);
-  class_addmethod(c, (method) ola_output_connect, "connect", 0);
-  class_addmethod(c, (method) ola_output_in1, "in1", A_LONG, 0);
+  class_addmethod(c, (method) ola_output_list,      "list",     A_GIMME,    0);
+  class_addmethod(c, (method) ola_output_int,       "int",      A_LONG,     0);
+  class_addmethod(c, (method) ola_output_assist,    "assist",   A_CANT,     0);
+  class_addmethod(c, (method) ola_output_blackout,  "blackout",             0);
+  class_addmethod(c, (method) ola_output_state,     "state",                0);
+  class_addmethod(c, (method) ola_output_connect,   "connect",              0);
+  class_addmethod(c, (method) ola_output_in1,       "in1",      A_LONG,     0);
   class_register(CLASS_BOX, c);
+    
   s_ola_output_class = c;
+    
   return 0;
 }
 
@@ -126,9 +119,11 @@ int T_EXPORT main(void) {
  * @param s?
  */
 void *ola_output_new(t_symbol *s, long argc, t_atom *argv) {
+    
 	t_ola_output *ola_output = (t_ola_output*) object_alloc(s_ola_output_class);
 	
 	if (ola_output) {
+        
 		//set up connectionstate outlet
 		ola_output->m_outlet1 = intout((t_object *)ola_output); 
 
@@ -158,10 +153,13 @@ void *ola_output_new(t_symbol *s, long argc, t_atom *argv) {
  * @param ola_output the object to destroy
  */
 void ola_output_free(t_ola_output *ola_output) {
-  if (ola_output->client) {
-    delete ola_output->client;
-    ola_output->client = NULL;
-  }
+    
+    if (ola_output->client) {
+        
+        delete ola_output->client;
+        ola_output->client = NULL;
+    }
+    
 }
 
 
@@ -187,6 +185,7 @@ void ola_output_list(t_ola_output *ola_output, t_symbol *msg, long argc, t_atom 
 	}
 
 	if (ola_output->client) {
+        
 		if (!ola_output->client->SendDmx(ola_output->universe, ola_output->buffer)) {
 			//looks like ola is disconnected
 			SetOlaStateDisconnected(ola_output);
@@ -202,7 +201,7 @@ void ola_output_list(t_ola_output *ola_output, t_symbol *msg, long argc, t_atom 
  * @param argc the number of atoms
  * @param argv a pointer to the head of a list of atoms
  */
-void ola_output_int(t_ola_output *ola_output, long value)
+void ola_output_int(t_ola_output *ola_output, t_atom_long value)
 {
 	long dmxVal = value;
 	//bounds checking and limiting
@@ -227,8 +226,9 @@ void ola_output_int(t_ola_output *ola_output, long value)
  */
 void ola_output_assist(t_ola_output *ola_output, void *b, long io, long index, char *s) {
 
-	switch (io) { 
+	switch (io) {
 		case 1:
+            
 			switch (index) { 
 				case 0:
 					strncpy_zero(s, "The primary inlet to receive messages", 512);
@@ -237,7 +237,8 @@ void ola_output_assist(t_ola_output *ola_output, void *b, long io, long index, c
 					strncpy_zero(s, "Which dmx universe to send messages to (defaults to 1)", 512);
 					break;
 			}
-			break; 
+			break;
+            
 		case 2:
 			strncpy_zero(s, "Status messages are sent to this outlet", 512); 
 			break;
@@ -252,7 +253,9 @@ void ola_output_assist(t_ola_output *ola_output, void *b, long io, long index, c
 void ola_output_blackout(t_ola_output *ola_output) {
 	
 	if (ola_output->client) {
+        
 		ola_output->buffer.Blackout();
+        
 		if (!ola_output->client->SendDmx(ola_output->universe, ola_output->buffer)) {
 			//looks like ola is disconnected
 			SetOlaStateDisconnected(ola_output);
@@ -292,7 +295,8 @@ void ola_output_connect(t_ola_output *ola_output) {
  * @param ola_output a pointer to a t_ola_output struct
  * @param n the universe number
  */
-void ola_output_in1(t_ola_output *ola_output, long n) {
+void ola_output_in1(t_ola_output *ola_output, t_atom_long n) {
+    
 	ola_output->universe = n;
 }
 
@@ -303,10 +307,9 @@ void ola_output_in1(t_ola_output *ola_output, long n) {
  * @param ola_output a pointer to a t_ola_output struct
  */
 void ola_output_outlet(t_ola_output *ola_output) {
+    
 	outlet_int(ola_output->m_outlet1, (long)ola_output->connectionState);
 }
-
-
 
 
 
