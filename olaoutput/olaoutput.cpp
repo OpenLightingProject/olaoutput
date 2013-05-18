@@ -2,7 +2,7 @@
  MAX OLA Output Plugin
  OlaOutput.cpp
  
- Copyright (c) Daniel Edgar and Simon Newton
+ Copyright (c) Daniel Edgar, Simon Newton and David Butler
  
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -28,323 +28,401 @@
 
 #include "ext.h"
 #include "ext_obex.h"
-#include "ext_strings.h"
-#include "ext_common.h"
-#include "ext_systhread.h"
 
 #include <ola/BaseTypes.h>
 #include <ola/Logging.h>
 #include <ola/DmxBuffer.h>
 #include <ola/StreamingClient.h>
-#include <algorithm>
 
 using ola::StreamingClient;
 using ola::DmxBuffer;
 
-
-enum ConnectionState {	
-	disconnected = 0,   	
-	connected = 1
-};
-
-
-// The OLA Output object.
-typedef struct  {
-	t_object c_box;
-	void *m_outlet1;
+// object structure
+typedef struct _olaoutput
+{
+	t_object object;
+    
+	void *outletDump;
+    void *outletConnectionState;
+    
 	StreamingClient *client;
-	DmxBuffer buffer;
-	long universe;
-	enum ConnectionState connectionState;
-} t_ola_output;
+	DmxBuffer olaBuffer;
+    
+    t_uint8 buffer[512];
+    
+	t_atom_long universe;
+    
+    t_bool isBlackout;
+	t_bool isConnected;
+    
+} t_olaoutput;
 
 
 // prototypes
-void *ola_output_new(t_symbol *s, long argc, t_atom *argv);
-void ola_output_free(t_ola_output* ola_output);
-void ola_output_list(t_ola_output *ola_output, t_symbol *msg, long argc, t_atom *argv);
-void ola_output_int(t_ola_output *ola_output, t_atom_long value);
-void ola_output_assist(t_ola_output *ola_output, void *b, long io, long index, char *s);
-void ola_output_blackout(t_ola_output* ola_output);
-void ola_output_state(t_ola_output* ola_output);
-void ola_output_connect(t_ola_output* ola_output);
-void ola_output_in1(t_ola_output *ola_output, t_atom_long n);
-void ola_output_outlet(t_ola_output *ola_output);
-void setConnectionState(t_ola_output *ola_output, ConnectionState state);
-void SetOlaStateDisconnected(t_ola_output *ola_output);
-void SetupOlaConnection(t_ola_output *ola_output);
+void *olaoutput_new(t_symbol *s, long argc, t_atom *argv);
+void olaoutput_free(t_olaoutput* x);
+void olaoutput_assist(t_olaoutput *x, void *b, long io, long index, char *s);
 
+void olaoutput_list(t_olaoutput *x, t_symbol *msg, long argc, t_atom *argv);
+void olaoutput_int(t_olaoutput *x, t_atom_long value);
+void olaoutput_float(t_olaoutput *x, double dmxValue);
+void olaoutput_channel(t_olaoutput *x, t_symbol *msg, long argc, t_atom *argv);
 
+void olaoutput_connect(t_olaoutput* x);
+void olaoutput_send(t_olaoutput *x);
+
+t_max_err olaoutput_universe_set(t_olaoutput *x, t_object *attr, long argc, t_atom *argv);
+t_max_err olaoutput_blackout_set(t_olaoutput *x, t_object *attr, long argc, t_atom *argv);
 
 // The class structure for this plugin
-static t_class *s_ola_output_class = NULL;
+static t_class *olaoutput_class = NULL;
 
+
+// ******************************************************************************************************************
 
 /*
  * The entry point to this plugin. This sets up the global s_ola_output_class
  * object which tells MAX how to create objects of type Ola Output.
  */
-int C74_EXPORT main(void) {
-  
-  // turn on OLA logging
-  ola::InitLogging(ola::OLA_LOG_WARN, ola::OLA_LOG_STDERR);
+int C74_EXPORT main(void)
+{
+    // turn on OLA logging
+    ola::InitLogging(ola::OLA_LOG_WARN, ola::OLA_LOG_STDERR);
+    
+    common_symbols_init();
 	
-	
-  t_class *c = class_new("olaoutput",
-                         (method) ola_output_new,
-                         (method) ola_output_free,
-                         sizeof(t_ola_output),
+    t_class *c = class_new("olaoutput",
+                         (method) olaoutput_new,
+                         (method) olaoutput_free,
+                         sizeof(t_olaoutput),
                          (method) NULL,
                          A_GIMME,
                          0);
+    
+    class_addmethod(c, (method) olaoutput_list,      "list",     A_GIMME,    0);
+    class_addmethod(c, (method) olaoutput_int,       "int",      A_LONG,     0);
+    class_addmethod(c, (method) olaoutput_float,     "float",    A_FLOAT,    0);
+    class_addmethod(c, (method) olaoutput_channel,   "channel",  A_GIMME,    0);
+    class_addmethod(c, (method) olaoutput_connect,   "connect",              0);
+    
+    class_addmethod(c, (method) olaoutput_assist,    "assist",   A_CANT,     0);
+    
+    CLASS_ATTR_LONG(c, "universe", 0, t_olaoutput, universe);
+    CLASS_ATTR_ACCESSORS(c, "universe", NULL, olaoutput_universe_set);
+    CLASS_ATTR_LABEL(c, "universe", 0, "OLA Universe");
+    CLASS_ATTR_CATEGORY(c, "universe", 0, "Settings");
+    CLASS_ATTR_ORDER(c, "universe", 0, "1");
+    CLASS_ATTR_SAVE(c, "universe", 0);
+    
+    CLASS_ATTR_CHAR(c, "blackout", 0, t_olaoutput, isBlackout);
+    CLASS_ATTR_ACCESSORS(c, "blackout", NULL, olaoutput_blackout_set);
+    CLASS_ATTR_STYLE_LABEL(c, "blackout", 0, "onoff", "Blackout");
+    CLASS_ATTR_CATEGORY(c, "blackout", 0, "Settings");
+    CLASS_ATTR_ORDER(c, "blackout", 0, "2");
+    
+    class_register(CLASS_BOX, c);
+    olaoutput_class = c;
+    
+    post("olaoutput Version 0.9");
 
-  common_symbols_init();
-  class_addmethod(c, (method) ola_output_list,      "list",     A_GIMME,    0);
-  class_addmethod(c, (method) ola_output_int,       "int",      A_LONG,     0);
-  class_addmethod(c, (method) ola_output_assist,    "assist",   A_CANT,     0);
-  class_addmethod(c, (method) ola_output_blackout,  "blackout",             0);
-  class_addmethod(c, (method) ola_output_state,     "state",                0);
-  class_addmethod(c, (method) ola_output_connect,   "connect",              0);
-  class_addmethod(c, (method) ola_output_in1,       "in1",      A_LONG,     0);
-  class_register(CLASS_BOX, c);
-    
-  s_ola_output_class = c;
-    
-  return 0;
+    return 0;
 }
 
+// ******************************************************************************************************************
 
 /*
  * Create a new OlaOutput object.
- * @param s?
+ * @param t_symbol 
+ * @param long number of arguments
+ * @param argv argument atoms
  */
-void *ola_output_new(t_symbol *s, long argc, t_atom *argv) {
+void *olaoutput_new(t_symbol *s, long argc, t_atom *argv)
+{
     
-	t_ola_output *ola_output = (t_ola_output*) object_alloc(s_ola_output_class);
+	t_olaoutput *x = (t_olaoutput*) object_alloc(olaoutput_class);
 	
-	if (ola_output) {
+	if (x) {
         
-		//set up connectionstate outlet
-		ola_output->m_outlet1 = intout((t_object *)ola_output); 
+		x->outletDump = outlet_new((t_object*)x, NULL);
+        x->outletConnectionState = outlet_new((t_object*)x, NULL);
 
-		//set up ola
-		ola_output->client = new StreamingClient();
-
-		//set up the connection to ola
-		SetupOlaConnection(ola_output);
-		
-		
-		if (argc == 1 && atom_getlong(argv+0) != 0) { //the first argument is universe
-			ola_output->universe = atom_getlong(argv+0); //if specified, use it
-		}
-		else {
-			ola_output->universe = 1; //otherwise default the universe to 1
-		}
-
-		intin(ola_output, 1); //create the universe inlet
-
+        x->isConnected = false;
+        x->isBlackout = false;
+        
+		// connect to ola
+		x->client = new StreamingClient();
+        
+		if (argc > 0 && atom_gettype(argv) == A_LONG)
+            object_attr_setlong(x, gensym("universe"), atom_getlong(argv));
+        else
+			x->universe = 0;
+        
+        attr_args_process(x, argc, argv);
 	}
-	return ola_output;
+    
+	return x;
 }
+
 
 
 /*
  * Cleanup this OlaOutput object
- * @param ola_output the object to destroy
+ * @param t_olaoutput the object to destroy
  */
-void ola_output_free(t_ola_output *ola_output) {
+void olaoutput_free(t_olaoutput *x)
+{
+    if (x->client) {
+        delete x->client;
+        x->client = NULL;
+    }
+}
+
+
+
+/*
+ * To show descriptions of your object’s inlets and outlets while editing a patcher,
+ * this method can respond to the assist message with a function that copies the text to a string.
+ * @param t_olaoutput a pointer to a t_olaoutput struct
+ * @param b
+ * @param io
+ * @param index
+ * @param s
+ */
+void olaoutput_assist(t_olaoutput *x, void *b, long io, long index, char *s)
+{
+	switch (io) {
+		case 1:
+            strncpy_zero(s, "olaoutput", 512);
+            break;
+		case 2:
+            switch (index) {
+                case 0:
+                    strncpy_zero(s, "connection state", 512);
+                    break;
+                case 1:
+                    strncpy_zero(s, "dump outlet", 512);
+                    break;
+            }
+            break;
+	}
+}
+
+// ******************************************************************************************************************
+
+/*
+ * Write a list of values to the local buffer
+ * @param t_olaoutput a pointer to a t_olaoutput struct
+ * @param msg the name of the message received
+ * @param argc the number of atoms
+ * @param argv a pointer to the head of a list of atoms
+ */
+void olaoutput_list(t_olaoutput *x, t_symbol *msg, long argc, t_atom *argv)
+{
+    t_atom_long dmxValue;
     
-    if (ola_output->client) {
+	for (int i = 0; i < argc && i < 512; i++) {
+		
+        switch (atom_gettype(argv+i)) {
+            case A_LONG:
+                dmxValue = atom_getlong(argv+i);
+                dmxValue = std::min((t_atom_long)255, dmxValue);
+                dmxValue = std::max((t_atom_long)0, dmxValue);
+                x->buffer[i] = dmxValue;
+                break;
+                
+            case A_FLOAT:
+                dmxValue = (t_atom_long)floor(atom_getfloat(argv+i) + 0.5);
+                dmxValue = std::min((t_atom_long)255, dmxValue);
+                dmxValue = std::max((t_atom_long)0, dmxValue);
+                x->buffer[i] = dmxValue;
+                break;
+                
+            default:
+                break;
+        }
+	}
+    
+    olaoutput_send(x);
+}
+
+
+/*
+ * Writes a single int value to the local buffer
+ * @param t_olaoutput a pointer to a t_olaoutput struct
+ */
+void olaoutput_int(t_olaoutput *x, t_atom_long dmxValue)
+{
+    dmxValue = std::min((t_atom_long)255, dmxValue);
+    dmxValue = std::max((t_atom_long)0, dmxValue);
+    x->buffer[0] = dmxValue;
+    
+    olaoutput_send(x);
+}
+
+
+/*
+ * Write a single float value to the local buffer
+ * @param t_olaoutput a pointer to a t_olaoutput struct
+ */
+void olaoutput_float(t_olaoutput *x, double dmxValue)
+{
+    olaoutput_int(x, (t_atom_long)floor(dmxValue + 0.5));
+}
+
+
+
+/*
+ * Called to send data starting on a particular channel
+ * @param t_olaoutput a pointer to a t_olaoutput struct
+ * @param msg the name of the message received
+ * @param argc the number of atoms
+ * @param argv a pointer to the head of a list of atoms
+ */
+void olaoutput_channel(t_olaoutput *x, t_symbol *msg, long argc, t_atom *argv)
+{
+    if (atom_gettype(argv) == A_LONG) {
         
-        delete ola_output->client;
-        ola_output->client = NULL;
+        t_atom_long channel = atom_getlong(argv);
+        
+        if (channel >= 1 && channel <= 512) {
+            
+            t_atom_long dmxValue;
+            
+            for (int i = 1; i < argc && i < 513; i++) {
+                
+                switch (atom_gettype(argv+i)) {
+                        
+                    case A_LONG:
+                        dmxValue = atom_getlong(argv+i);
+                        dmxValue = std::min((t_atom_long)255, dmxValue);
+                        dmxValue = std::max((t_atom_long)0, dmxValue);
+                        x->buffer[i+(channel-1)] = dmxValue;
+                        break;
+                        
+                    case A_FLOAT:
+                        dmxValue = (t_atom_long)floor(atom_getfloat(argv+i) + 0.5);
+                        dmxValue = std::min((t_atom_long)255, dmxValue);
+                        dmxValue = std::max((t_atom_long)0, dmxValue);
+                        x->buffer[i+(channel-1)] = dmxValue;
+                        break;
+                        
+                    default:
+                        break;
+                }
+            }
+            
+            olaoutput_send(x);
+            return;
+            
+        } else {
+            object_error((t_object*)x, "Channel must be between 1 and 512 inclusive");
+            return;
+        }
+        
+    } else {
+        object_error((t_object*)x, "Channel must be an integer");
+        return;
     }
     
 }
-
-
-/*
- * Called when we get list data
- * @param ola_output a pointer to a t_ola_output struct
- * @param msg the name of the message received
- * @param argc the number of atoms
- * @param argv a pointer to the head of a list of atoms
- */
-void ola_output_list(t_ola_output *ola_output, t_symbol *msg, long argc, t_atom *argv) {
-
-	for (int i = 0; i < argc; i++) {
-		
-		long dmxVal = atom_getlong(argv+i); //atom_getlong returns only integers, truncates floats. See Max SDK for type coercion scenarios.
-
-		//bounds checking and limiting
-		dmxVal = std::min((long)255, dmxVal);
-		dmxVal = std::max((long)0, dmxVal);
-		
-		ola_output->buffer.SetChannel(i, dmxVal); 
-	
-	}
-
-	if (ola_output->client) {
-        
-		if (!ola_output->client->SendDmx(ola_output->universe, ola_output->buffer)) {
-			//looks like ola is disconnected
-			SetOlaStateDisconnected(ola_output);
-		}	
-	}
-}
+// ******************************************************************************************************************
 
 /*
- * Called when we get a single int value
- * Sends out specified DMX value to channel
- * @param ola_output a pointer to a t_ola_output struct
- * @param msg the name of the message received
- * @param argc the number of atoms
- * @param argv a pointer to the head of a list of atoms
+ * Initiates the connection to OLA
+ * @param t_olaoutput a pointer to a t_olaoutput struct
  */
-void ola_output_int(t_ola_output *ola_output, t_atom_long value)
+void olaoutput_connect(t_olaoutput *x)
 {
-	long dmxVal = value;
-	//bounds checking and limiting
-	dmxVal = std::min((long)255, dmxVal);
-	dmxVal = std::max((long)0, dmxVal);
-		
-	ola_output->buffer.SetChannel(0, dmxVal); 
-		
-	if (ola_output->client) {
-		if (!ola_output->client->SendDmx(ola_output->universe, ola_output->buffer)) {
-			//looks like ola is disconnected
-			SetOlaStateDisconnected(ola_output);
-		}	
-	}
-}
-
-
-/*
- * To show descriptions of your object’s inlets and outlets while editing a patcher, 
- * this method can respond to the assist message with a function that copies the text to a string.
- * @param ola_output a pointer to a t_ola_output struct
- */
-void ola_output_assist(t_ola_output *ola_output, void *b, long io, long index, char *s) {
-
-	switch (io) {
-		case 1:
-            
-			switch (index) { 
-				case 0:
-					strncpy_zero(s, "The primary inlet to receive messages", 512);
-					break; 
-				case 1:
-					strncpy_zero(s, "Which dmx universe to send messages to (defaults to 1)", 512);
-					break;
-			}
-			break;
-            
-		case 2:
-			strncpy_zero(s, "Status messages are sent to this outlet", 512); 
-			break;
-	}
-}
-
-
-/*
- * Sends a blackout message to OLA 
- * @param ola_output a pointer to a t_ola_output struct
- */
-void ola_output_blackout(t_ola_output *ola_output) {
-	
-	if (ola_output->client) {
-        
-		ola_output->buffer.Blackout();
-        
-		if (!ola_output->client->SendDmx(ola_output->universe, ola_output->buffer)) {
-			//looks like ola is disconnected
-			SetOlaStateDisconnected(ola_output);
-		}
-		
-	}
-}
-
-
-/*
- * Sends the current OLA connection state to max 
- * @param ola_output a pointer to a t_ola_output struct
- */
-void ola_output_state(t_ola_output *ola_output) {
-	
-	//output the current connection state value to max
-	ola_output_outlet(ola_output);
-}
-
-
-/*
- * Initiates the connection to OLA, in case olaoutput didn't connect on instantiation 
- * @param ola_output a pointer to a t_ola_output struct
- */
-void ola_output_connect(t_ola_output *ola_output) {
-	
-	if (ola_output->connectionState == disconnected) {
-		
-		//set up the connection to ola
-		SetupOlaConnection(ola_output);
-	}
-}
-
-
-/*
- * Sets which universe OLA should send dmx messages to 
- * @param ola_output a pointer to a t_ola_output struct
- * @param n the universe number
- */
-void ola_output_in1(t_ola_output *ola_output, t_atom_long n) {
+    if (x->isConnected == false || x->client == NULL) {
     
-	ola_output->universe = n;
-}
-
-
-/*
- * Outputs OLA connection status
- * 0 = not connected to ola, 1 = connected to ola
- * @param ola_output a pointer to a t_ola_output struct
- */
-void ola_output_outlet(t_ola_output *ola_output) {
+        //initiate the connection to ola
+        if (x->client->Setup()) {
+            
+            x->isConnected = true;
+            object_post((t_object*)x, "Connected to OLA");
+            
+        } else {
+            
+            x->isConnected = false;
+            object_post((t_object*)x, "OLA connection failed. olad must be running to send data.");
+            
+        }
+    }
     
-	outlet_int(ola_output->m_outlet1, (long)ola_output->connectionState);
-}
-
-
-
-/* helper methods */
-
-void setConnectionState(t_ola_output *ola_output, ConnectionState state) {
-	
-	//set the new state
-	ola_output->connectionState = state;
-	
-	//and output the current value to max
-	ola_output_outlet(ola_output);
-	
+    outlet_int(x->outletConnectionState, x->isConnected);
 }
 
 
 /*
- * This we call if we are unable to successfully send dmx messages to ola
+ * Sends data in the local buffer to OLA
+ * @param t_olaoutput a pointer to a t_olaoutput struct
  */
-void SetOlaStateDisconnected(t_ola_output *ola_output) {
-	post("OLA StreamingClient: disconnected from olad");
-	setConnectionState(ola_output, disconnected); //hmm, not connected, so output the current state
+void olaoutput_send(t_olaoutput *x)
+{
+    if (x->isConnected == false)
+        olaoutput_connect(x);
+    
+    if (x->isBlackout)
+        x->olaBuffer.Blackout();
+    else
+        x->olaBuffer.Set(x->buffer, 512);
+    
+    if (!x->client->SendDmx(x->universe, x->olaBuffer)) {
+        
+        if (x->isConnected) {
+            x->isConnected = false;
+            outlet_int(x->outletConnectionState, x->isConnected);
+            object_error((t_object*)x, "Connection to OLA lost");
+        } else {
+            object_error((t_object*)x, "Not connected to OLA");
+        }
+    }
+}
+
+// ******************************************************************************************************************
+
+/*
+ * Sets the value of the universe attribute
+ * @param t_olaoutput a pointer to a t_olaoutput struct
+ * @param attr
+ * @param argc
+ * @param argv
+ */
+t_max_err olaoutput_universe_set(t_olaoutput *x, t_object *attr, long argc, t_atom *argv)
+{
+    t_atom_long universe = atom_getlong(argv);
+        
+    if (universe >= 0 && universe <= 4294967295) {
+        x->universe = universe;
+        olaoutput_send(x);
+    }
+    
+    return MAX_ERR_NONE;
 }
 
 
-void SetupOlaConnection(t_ola_output *ola_output) {
-	//initiate the connection to ola
-	if (!ola_output->client->Setup()) {
-		setConnectionState(ola_output, disconnected); //hmm, not connected, so output the current state
-		post("OLA StreamingClient setup failed. Is olad running?");
-	}
-	else {
-		setConnectionState(ola_output, connected); //looks like we've connected, so output the current state
-		post("OLA StreamingClient setup successful. Connected to olad.");
-	}
-}	
+
+/*
+ * Sets the value of the blackout attribute
+ * @param t_olaoutput a pointer to a t_olaoutput struct
+ * @param attr
+ * @param argc
+ * @param argv
+ */
+t_max_err olaoutput_blackout_set(t_olaoutput *x, t_object *attr, long argc, t_atom *argv)
+{
+    t_atom_long blackout = atom_getlong(argv);
+        
+    if (blackout > 0)
+        x->isBlackout = true;
+    else
+        x->isBlackout = false;
+    
+    olaoutput_send(x);
+    
+    return MAX_ERR_NONE;
+}
+
+
 
   
