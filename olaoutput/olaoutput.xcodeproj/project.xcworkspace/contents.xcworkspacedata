@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:olaoutput.xcodeproj">
+      location = "self:imp.msc.xcodeproj">
    </FileRef>
 </Workspace>

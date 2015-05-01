@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>8BB9D4FF-D4C6-42C7-953F-8CA7AAB1A969</string>
+	<key>IDESourceControlProjectName</key>
+	<string>imp.ltc</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>58089FBD-D60C-47F7-B8AF-CDF499BDFE4A</key>
+		<string>https://github.com/impsnldavid/impmaxobjects.git</string>
+		<key>D9379814-0D5F-4732-A7A6-EA627AD11589</key>
+		<string>https://github.com/Cycling74/max6-sdk</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>imp.msc/imp.ltc.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>58089FBD-D60C-47F7-B8AF-CDF499BDFE4A</key>
+		<string>../../..</string>
+		<key>D9379814-0D5F-4732-A7A6-EA627AD11589</key>
+		<string>../../../max6-sdk</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/impsnldavid/impmaxobjects.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>58089FBD-D60C-47F7-B8AF-CDF499BDFE4A</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>58089FBD-D60C-47F7-B8AF-CDF499BDFE4A</string>
+			<key>IDESourceControlWCCName</key>
+			<string>impmaxobjects</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>D9379814-0D5F-4732-A7A6-EA627AD11589</string>
+			<key>IDESourceControlWCCName</key>
+			<string>max6-sdk</string>
+		</dict>
+	</array>
+</dict>
+</plist>

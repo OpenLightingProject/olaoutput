@@ -7,21 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		63DB6E7A174694D000F72BB3 /* olaoutput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63DB6E79174694D000F72BB3 /* olaoutput.cpp */; };
-		63DB6E7C1746953400F72BB3 /* libola.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 63DB6E7B1746953400F72BB3 /* libola.1.dylib */; };
-		63DB6E7E1746954200F72BB3 /* libolacommon.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 63DB6E7D1746954200F72BB3 /* libolacommon.0.dylib */; };
-		63DB6E801746956700F72BB3 /* libprotobuf.8.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 63DB6E7F1746956700F72BB3 /* libprotobuf.8.dylib */; };
-		63DB6E83174695A500F72BB3 /* commonsyms.c in Sources */ = {isa = PBXBuildFile; fileRef = 63DB6E82174695A500F72BB3 /* commonsyms.c */; };
+		63E33AD41AF3BAAF00818335 /* libola.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E33AD31AF3BAAF00818335 /* libola.1.dylib */; };
+		63E33AD61AF3BAE900818335 /* libolacommon.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E33AD51AF3BAE900818335 /* libolacommon.0.dylib */; };
+		63F3D3371AF3B9C50081102E /* olaoutput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63F3D3361AF3B9C50081102E /* olaoutput.cpp */; };
+		63FE3733195078FA00B07A04 /* commonsyms.c in Sources */ = {isa = PBXBuildFile; fileRef = 63FE3732195078FA00B07A04 /* commonsyms.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		22CF10220EE984600054F513 /* maxmspsdk.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = maxmspsdk.xcconfig; path = ../maxmspsdk.xcconfig; sourceTree = SOURCE_ROOT; };
 		2FBBEAE508F335360078DB84 /* olaoutput.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = olaoutput.mxo; sourceTree = BUILT_PRODUCTS_DIR; };
-		63DB6E79174694D000F72BB3 /* olaoutput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = olaoutput.cpp; sourceTree = "<group>"; };
-		63DB6E7B1746953400F72BB3 /* libola.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libola.1.dylib; path = /opt/local/lib/libola.1.dylib; sourceTree = "<absolute>"; };
-		63DB6E7D1746954200F72BB3 /* libolacommon.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libolacommon.0.dylib; path = /opt/local/lib/libolacommon.0.dylib; sourceTree = "<absolute>"; };
-		63DB6E7F1746956700F72BB3 /* libprotobuf.8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libprotobuf.8.dylib; path = /opt/local/lib/libprotobuf.8.dylib; sourceTree = "<absolute>"; };
-		63DB6E82174695A500F72BB3 /* commonsyms.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = commonsyms.c; path = "../c74support/max-includes/common/commonsyms.c"; sourceTree = "<group>"; };
+		63E33AD31AF3BAAF00818335 /* libola.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libola.1.dylib; path = ../../../../../opt/local/lib/libola.1.dylib; sourceTree = "<group>"; };
+		63E33AD51AF3BAE900818335 /* libolacommon.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libolacommon.0.dylib; path = ../../../../../opt/local/lib/libolacommon.0.dylib; sourceTree = "<group>"; };
+		63F3D3361AF3B9C50081102E /* olaoutput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = olaoutput.cpp; sourceTree = "<group>"; };
+		63FE36D6195073C400B07A04 /* maxmspsdk.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = maxmspsdk.xcconfig; path = ../xcodeconfig/maxmspsdk.xcconfig; sourceTree = "<group>"; };
+		63FE3732195078FA00B07A04 /* commonsyms.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = commonsyms.c; path = "../max6-sdk/c74support/max-includes/common/commonsyms.c"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,9 +27,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				63DB6E801746956700F72BB3 /* libprotobuf.8.dylib in Frameworks */,
-				63DB6E7E1746954200F72BB3 /* libolacommon.0.dylib in Frameworks */,
-				63DB6E7C1746953400F72BB3 /* libola.1.dylib in Frameworks */,
+				63E33AD61AF3BAE900818335 /* libolacommon.0.dylib in Frameworks */,
+				63E33AD41AF3BAAF00818335 /* libola.1.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -41,11 +38,12 @@
 		089C166AFE841209C02AAC07 /* iterator */ = {
 			isa = PBXGroup;
 			children = (
-				63DB6E82174695A500F72BB3 /* commonsyms.c */,
-				63DB6E79174694D000F72BB3 /* olaoutput.cpp */,
-				63DB6E811746956E00F72BB3 /* Libraries */,
+				63E33AD51AF3BAE900818335 /* libolacommon.0.dylib */,
+				63E33AD31AF3BAAF00818335 /* libola.1.dylib */,
+				63FE36D6195073C400B07A04 /* maxmspsdk.xcconfig */,
+				63FE370D1950748600B07A04 /* Max Objects */,
+				63FE3731195078E200B07A04 /* Max SDK */,
 				19C28FB4FE9D528D11CA2CBB /* Products */,
-				22CF10220EE984600054F513 /* maxmspsdk.xcconfig */,
 			);
 			name = iterator;
 			sourceTree = "<group>";
@@ -58,14 +56,20 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		63DB6E811746956E00F72BB3 /* Libraries */ = {
+		63FE370D1950748600B07A04 /* Max Objects */ = {
 			isa = PBXGroup;
 			children = (
-				63DB6E7F1746956700F72BB3 /* libprotobuf.8.dylib */,
-				63DB6E7D1746954200F72BB3 /* libolacommon.0.dylib */,
-				63DB6E7B1746953400F72BB3 /* libola.1.dylib */,
+				63F3D3361AF3B9C50081102E /* olaoutput.cpp */,
 			);
-			name = Libraries;
+			name = "Max Objects";
+			sourceTree = "<group>";
+		};
+		63FE3731195078E200B07A04 /* Max SDK */ = {
+			isa = PBXGroup;
+			children = (
+				63FE3732195078FA00B07A04 /* commonsyms.c */,
+			);
+			name = "Max SDK";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -81,9 +85,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		2FBBEAD608F335360078DB84 /* max-external */ = {
+		2FBBEAD608F335360078DB84 /* olaoutput */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2FBBEAE008F335360078DB84 /* Build configuration list for PBXNativeTarget "max-external" */;
+			buildConfigurationList = 2FBBEAE008F335360078DB84 /* Build configuration list for PBXNativeTarget "olaoutput" */;
 			buildPhases = (
 				2FBBEAD708F335360078DB84 /* Headers */,
 				2FBBEAD808F335360078DB84 /* Resources */,
@@ -95,7 +99,7 @@
 			);
 			dependencies = (
 			);
-			name = "max-external";
+			name = olaoutput;
 			productName = iterator;
 			productReference = 2FBBEAE508F335360078DB84 /* olaoutput.mxo */;
 			productType = "com.apple.product-type.bundle";
@@ -106,7 +110,7 @@
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0460;
+				LastUpgradeCheck = 0630;
 			};
 			buildConfigurationList = 2FBBEACF08F335010078DB84 /* Build configuration list for PBXProject "olaoutput" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -119,7 +123,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				2FBBEAD608F335360078DB84 /* max-external */,
+				2FBBEAD608F335360078DB84 /* olaoutput */,
 			);
 		};
 /* End PBXProject section */
@@ -149,8 +153,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				63DB6E7A174694D000F72BB3 /* olaoutput.cpp in Sources */,
-				63DB6E83174695A500F72BB3 /* commonsyms.c in Sources */,
+				63FE3733195078FA00B07A04 /* commonsyms.c in Sources */,
+				63F3D3371AF3B9C50081102E /* olaoutput.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -160,50 +164,70 @@
 		2FBBEAD008F335010078DB84 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 			};
 			name = Development;
 		};
 		2FBBEAD108F335010078DB84 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 			};
 			name = Deployment;
 		};
 		2FBBEAE108F335360078DB84 /* Development */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 22CF10220EE984600054F513 /* maxmspsdk.xcconfig */;
+			baseConfigurationReference = 63FE36D6195073C400B07A04 /* maxmspsdk.xcconfig */;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/David/LocalDev/impmaxobjects/max6-sdk/c74support/msp-includes",
+				);
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
-					/Developer/Headers/FlatCarbon,
 					"\"$(C74SUPPORT)/max-includes\"",
 					"\"$(C74SUPPORT)/msp-includes\"",
 					"\"$(C74SUPPORT)/jit-includes\"",
-					/opt/local/include,
+					/opt/local/include/,
 				);
-				LIBRARY_SEARCH_PATHS = /opt/local/lib/;
+				INFOPLIST_FILE = ../xcodeconfig/Info.plist;
+				LIBRARY_SEARCH_PATHS = (
+					/opt/local/lib/,
+					/opt/local/lib,
+				);
 				OTHER_LDFLAGS = "$(C74_SYM_LINKER_FLAGS)";
 			};
 			name = Development;
 		};
 		2FBBEAE208F335360078DB84 /* Deployment */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 22CF10220EE984600054F513 /* maxmspsdk.xcconfig */;
+			baseConfigurationReference = 63FE36D6195073C400B07A04 /* maxmspsdk.xcconfig */;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/David/LocalDev/impmaxobjects/max6-sdk/c74support/msp-includes",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
-					/Developer/Headers/FlatCarbon,
 					"\"$(C74SUPPORT)/max-includes\"",
 					"\"$(C74SUPPORT)/msp-includes\"",
 					"\"$(C74SUPPORT)/jit-includes\"",
-					/opt/local/include,
+					/opt/local/include/,
 				);
-				LIBRARY_SEARCH_PATHS = /opt/local/lib/;
+				INFOPLIST_FILE = ../xcodeconfig/Info.plist;
+				LIBRARY_SEARCH_PATHS = (
+					/opt/local/lib/,
+					/opt/local/lib,
+				);
 				OTHER_LDFLAGS = "$(C74_SYM_LINKER_FLAGS)";
 			};
 			name = Deployment;
@@ -220,7 +244,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Development;
 		};
-		2FBBEAE008F335360078DB84 /* Build configuration list for PBXNativeTarget "max-external" */ = {
+		2FBBEAE008F335360078DB84 /* Build configuration list for PBXNativeTarget "olaoutput" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2FBBEAE108F335360078DB84 /* Development */,

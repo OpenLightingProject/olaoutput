@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>8566A0F9-89BD-49BE-A3ED-3391CC275956</string>
+	<key>IDESourceControlProjectName</key>
+	<string>olaoutput</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>432D987CF0E487D0F8961CB5FDD6233842994479</key>
+		<string>https://github.com/OpenLightingProject/olaoutput.git</string>
+		<key>43DDD4A1012A81E5C2F5DA96FCA0DABF5263B8FC</key>
+		<string>git://github.com/Cycling74/max6-sdk</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>olaoutput/olaoutput.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>432D987CF0E487D0F8961CB5FDD6233842994479</key>
+		<string>../../..</string>
+		<key>43DDD4A1012A81E5C2F5DA96FCA0DABF5263B8FC</key>
+		<string>../../..max6-sdk</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/OpenLightingProject/olaoutput.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>432D987CF0E487D0F8961CB5FDD6233842994479</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>432D987CF0E487D0F8961CB5FDD6233842994479</string>
+			<key>IDESourceControlWCCName</key>
+			<string>olaoutput</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>43DDD4A1012A81E5C2F5DA96FCA0DABF5263B8FC</string>
+			<key>IDESourceControlWCCName</key>
+			<string>olaoutputmax6-sdk</string>
+		</dict>
+	</array>
+</dict>
+</plist>
